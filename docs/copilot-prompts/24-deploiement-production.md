@@ -1,6 +1,6 @@
 # Prompt 24 — Préparation du déploiement production
 
-Prépare une procédure de déploiement adaptée à l'infrastructure détectée (Nginx/Apache, PHP-FPM, MySQL, queue, scheduler).
+Prépare une procédure de déploiement adaptée à l'infrastructure détectée (Nginx/Apache, PHP-FPM, Sqlite, queue, scheduler).
 
 Documente :
 - versions PHP/extensions et configuration ;

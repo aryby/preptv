@@ -1,6 +1,6 @@
 # Prompt 00 — Audit initial du dépôt
 
-Agis comme un architecte logiciel senior spécialisé en Laravel 12, PHP 8.3+ et Filament v4.
+Agis comme un architecte logiciel senior spécialisé en Laravel 13, PHP 8.3+ et Filament v4.
 
 Avant toute modification, inspecte le dépôt actuel :
 - `composer.json` et `composer.lock`

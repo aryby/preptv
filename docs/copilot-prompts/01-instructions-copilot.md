@@ -12,8 +12,8 @@ Fichiers souhaités :
 Avant de créer un fichier, vérifie s'il existe. Ne remplace jamais silencieusement des instructions existantes : propose une fusion et conserve les règles utiles.
 
 Les instructions doivent couvrir :
-- Laravel 12 et PHP 8.3+, en respectant les versions réellement détectées ;
-- Filament v4 et un panel unique ;
+- Laravel 13+ et PHP 8.3+, en respectant les versions réellement détectées ;
+- Filament v4+ et un panel unique ;
 - Blade, Livewire et Tailwind ;
 - architecture modulaire orientée domaines ;
 - contrôleurs, composants Livewire et Resources Filament minces ;
@@ -29,7 +29,6 @@ Les instructions doivent couvrir :
 - conformité : intégration uniquement avec des fournisseurs de contenus autorisés.
 
 Interdictions :
-- pas de `migrate:fresh` ;
 - pas de suppression de données ou de fichiers sans accord ;
 - pas de secrets dans le code ;
 - pas d'activation d'abonnement depuis une simple redirection navigateur ;

@@ -47,11 +47,11 @@ Ce dossier contient les prompts à exécuter progressivement dans **GitHub Copil
 
 ## Stack cible
 
-- Laravel 12
+- Laravel 13
 - PHP 8.3+
-- Filament v4 — un seul panel d'administration
+- Filament v4+ — un seul panel d'administration
 - Blade + Livewire + Tailwind CSS pour les interfaces publiques et les portails
-- MySQL 8
+- Sqlite
 - Laravel Fortify pour l'authentification si nécessaire
 - Filament Shield pour les rôles et permissions
 - Spatie Activitylog pour l'audit
