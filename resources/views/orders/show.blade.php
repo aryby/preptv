@@ -28,6 +28,20 @@
                         <p class="rounded-lg bg-amber-950/40 p-4 text-amber-100">
                             En attente de paiement. Aucun abonnement n’est activé.
                         </p>
+                        @if ($paypalCheckoutUrl)
+                            <form method="POST" action="{{ $paypalCheckoutUrl }}">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+                                >
+                                    Payer avec PayPal
+                                </button>
+                            </form>
+                        @endif
+                        @error('payment')
+                            <p class="rounded-lg bg-red-950/40 p-4 text-red-100">{{ $message }}</p>
+                        @enderror
                         <form method="POST" action="{{ $abandonUrl }}">
                             @csrf
                             <button

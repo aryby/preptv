@@ -20,6 +20,12 @@ return [
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
+    'bootstrap_super_admin' => [
+        'name' => env('BOOTSTRAP_SUPER_ADMIN_NAME', 'admin'),
+        'email' => env('BOOTSTRAP_SUPER_ADMIN_EMAIL', 'admin@admin.com'),
+        'password' => env('BOOTSTRAP_SUPER_ADMIN_PASSWORD'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Guards

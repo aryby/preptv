@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Domain\Payments\Contracts\PaymentGateway;
+use App\Domain\Payments\Services\PayPalPaymentGateway;
 use App\Models\CreditNote;
 use App\Models\Currency;
 use App\Models\CustomerProfile;
@@ -56,7 +58,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(PaymentGateway::class, PayPalPaymentGateway::class);
     }
 
     /**
