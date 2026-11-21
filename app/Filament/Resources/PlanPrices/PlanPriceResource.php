@@ -42,7 +42,11 @@ class PlanPriceResource extends Resource
                     ->preload()
                     ->required(),
                 Select::make('currency_code')
-                    ->relationship('currency', 'name')
+                    ->relationship(
+                        'currency',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query): Builder => $query->active(),
+                    )
                     ->searchable()
                     ->preload()
                     ->required(),
@@ -51,16 +55,20 @@ class PlanPriceResource extends Resource
                     ->required(),
                 TextInput::make('billing_period_count')
                     ->numeric()
+                    ->rules(['integer'])
                     ->minValue(1)
+                    ->maxValue(65535)
                     ->required(),
                 TextInput::make('amount_minor')
                     ->label('Montant en unités mineures')
                     ->numeric()
+                    ->rules(['integer'])
                     ->minValue(0)
                     ->required(),
                 DateTimePicker::make('effective_from')
                     ->required(),
-                DateTimePicker::make('effective_until'),
+                DateTimePicker::make('effective_until')
+                    ->afterOrEqual('effective_from'),
             ]);
     }
 

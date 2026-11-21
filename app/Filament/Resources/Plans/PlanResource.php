@@ -10,9 +10,11 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -50,13 +52,26 @@ class PlanResource extends Resource
                 Select::make('status')
                     ->options(PlanStatus::class)
                     ->required(),
+                Toggle::make('is_public')
+                    ->label('Visible publiquement')
+                    ->required(),
+                TextInput::make('sort_order')
+                    ->label('Ordre d’affichage')
+                    ->numeric()
+                    ->rules(['integer'])
+                    ->minValue(0)
+                    ->required(),
                 TextInput::make('device_limit')
                     ->numeric()
+                    ->rules(['integer'])
                     ->minValue(1)
+                    ->maxValue(65535)
                     ->required(),
                 TextInput::make('concurrent_session_limit')
                     ->numeric()
+                    ->rules(['integer'])
                     ->minValue(1)
+                    ->maxValue(65535)
                     ->required(),
             ]);
     }
@@ -72,6 +87,12 @@ class PlanResource extends Resource
                     ->searchable(),
                 TextColumn::make('status')
                     ->badge(),
+                IconColumn::make('is_public')
+                    ->label('Public')
+                    ->boolean(),
+                TextColumn::make('sort_order')
+                    ->label('Ordre')
+                    ->sortable(),
                 TextColumn::make('device_limit')
                     ->numeric()
                     ->sortable(),
@@ -93,7 +114,7 @@ class PlanResource extends Resource
             ->recordActions([
                 EditAction::make(),
             ])
-            ->defaultSort('name');
+            ->defaultSort('sort_order');
     }
 
     public static function getPages(): array

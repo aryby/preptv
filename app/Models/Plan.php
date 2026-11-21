@@ -18,6 +18,8 @@ class Plan extends Model
         'name',
         'description',
         'status',
+        'is_public',
+        'sort_order',
         'device_limit',
         'concurrent_session_limit',
     ];
@@ -26,6 +28,8 @@ class Plan extends Model
     {
         return [
             'status' => PlanStatus::class,
+            'is_public' => 'boolean',
+            'sort_order' => 'integer',
             'device_limit' => 'integer',
             'concurrent_session_limit' => 'integer',
         ];
@@ -49,5 +53,12 @@ class Plan extends Model
     public function scopeActive(Builder $query): void
     {
         $query->where('status', PlanStatus::Active->value);
+    }
+
+    public function scopePublished(Builder $query): void
+    {
+        $query
+            ->where('status', PlanStatus::Active->value)
+            ->where('is_public', true);
     }
 }

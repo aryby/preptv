@@ -23,6 +23,8 @@ class PlanFactory extends Factory
             'name' => fake()->words(2, true),
             'description' => fake()->sentence(),
             'status' => PlanStatus::Active,
+            'is_public' => true,
+            'sort_order' => 0,
             'device_limit' => 3,
             'concurrent_session_limit' => 2,
         ];
