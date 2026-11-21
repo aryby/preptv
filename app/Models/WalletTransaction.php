@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Domain\Resellers\Enums\WalletTransactionType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -32,5 +33,24 @@ class WalletTransaction extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'currency_code', 'code');
+    }
+
+    public function scopeVisibleTo(Builder $query, User $user): void
+    {
+        if ($user->hasAnyRole(['super_admin', 'admin', 'finance'])) {
+            return;
+        }
+
+        $resellerProfileId = $user->resellerProfile?->getKey();
+
+        if ($user->hasRole('reseller') && $resellerProfileId !== null) {
+            $query->whereHas('wallet', function (Builder $walletQuery) use ($resellerProfileId): void {
+                $walletQuery->where('reseller_profile_id', $resellerProfileId);
+            });
+
+            return;
+        }
+
+        $query->whereRaw('1 = 0');
     }
 }

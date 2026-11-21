@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -31,5 +32,28 @@ class DeviceAssignment extends Model
     public function streamingSessions(): HasMany
     {
         return $this->hasMany(StreamingSession::class);
+    }
+
+    public function scopeVisibleTo(Builder $query, User $user): void
+    {
+        if ($user->hasAnyRole(['super_admin', 'admin', 'support'])) {
+            return;
+        }
+
+        if ($user->hasRole('reseller')) {
+            $resellerProfileId = $user->resellerProfile?->getKey();
+
+            if ($resellerProfileId !== null) {
+                $query->whereHas('subscription', fn (Builder $subscriptionQuery) => $subscriptionQuery->where('reseller_profile_id', $resellerProfileId));
+
+                return;
+            }
+        } elseif ($user->hasRole('customer')) {
+            $query->whereHas('subscription', fn (Builder $subscriptionQuery) => $subscriptionQuery->where('user_id', $user->getKey()));
+
+            return;
+        }
+
+        $query->whereRaw('1 = 0');
     }
 }

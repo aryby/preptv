@@ -84,4 +84,33 @@ class Order extends Model
     {
         $query->where('public_id', $publicId);
     }
+
+    public function scopeVisibleTo(Builder $query, User $user): void
+    {
+        if ($user->hasAnyRole(['super_admin', 'admin', 'support', 'finance'])) {
+            return;
+        }
+
+        if ($user->hasRole('reseller')) {
+            $resellerProfileId = $user->resellerProfile?->getKey();
+
+            if ($resellerProfileId === null) {
+                $query->whereRaw('1 = 0');
+
+                return;
+            }
+
+            $query->where('reseller_profile_id', $resellerProfileId);
+
+            return;
+        }
+
+        if ($user->hasRole('customer')) {
+            $query->where('user_id', $user->getKey());
+
+            return;
+        }
+
+        $query->whereRaw('1 = 0');
+    }
 }

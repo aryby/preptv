@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Domain\Resellers\Enums\ResellerPackageStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -29,5 +30,22 @@ class ResellerPackage extends Model
     public function planPrice(): BelongsTo
     {
         return $this->belongsTo(PlanPrice::class);
+    }
+
+    public function scopeVisibleTo(Builder $query, User $user): void
+    {
+        if ($user->hasAnyRole(['super_admin', 'admin'])) {
+            return;
+        }
+
+        $resellerProfileId = $user->resellerProfile?->getKey();
+
+        if ($user->hasRole('reseller') && $resellerProfileId !== null) {
+            $query->where('reseller_profile_id', $resellerProfileId);
+
+            return;
+        }
+
+        $query->whereRaw('1 = 0');
     }
 }

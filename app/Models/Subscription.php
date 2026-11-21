@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Domain\Catalog\Enums\BillingPeriodUnit;
 use App\Domain\Subscriptions\Enums\SubscriptionStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -76,5 +77,34 @@ class Subscription extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function scopeVisibleTo(Builder $query, User $user): void
+    {
+        if ($user->hasAnyRole(['super_admin', 'admin', 'support'])) {
+            return;
+        }
+
+        if ($user->hasRole('reseller')) {
+            $resellerProfileId = $user->resellerProfile?->getKey();
+
+            if ($resellerProfileId === null) {
+                $query->whereRaw('1 = 0');
+
+                return;
+            }
+
+            $query->where('reseller_profile_id', $resellerProfileId);
+
+            return;
+        }
+
+        if ($user->hasRole('customer')) {
+            $query->where('user_id', $user->getKey());
+
+            return;
+        }
+
+        $query->whereRaw('1 = 0');
     }
 }

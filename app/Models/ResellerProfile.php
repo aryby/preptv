@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Domain\Resellers\Enums\ResellerStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -53,5 +54,20 @@ class ResellerProfile extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function scopeVisibleTo(Builder $query, User $user): void
+    {
+        if ($user->hasAnyRole(['super_admin', 'admin', 'support', 'finance'])) {
+            return;
+        }
+
+        if ($user->hasRole('reseller')) {
+            $query->where('user_id', $user->getKey());
+
+            return;
+        }
+
+        $query->whereRaw('1 = 0');
     }
 }

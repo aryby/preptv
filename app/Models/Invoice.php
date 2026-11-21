@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Domain\Billing\Enums\InvoiceStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -64,5 +65,34 @@ class Invoice extends Model
     public function creditNotes(): HasMany
     {
         return $this->hasMany(CreditNote::class);
+    }
+
+    public function scopeVisibleTo(Builder $query, User $user): void
+    {
+        if ($user->hasAnyRole(['super_admin', 'admin', 'finance'])) {
+            return;
+        }
+
+        if ($user->hasRole('reseller')) {
+            $resellerProfileId = $user->resellerProfile?->getKey();
+
+            if ($resellerProfileId === null) {
+                $query->whereRaw('1 = 0');
+
+                return;
+            }
+
+            $query->where('reseller_profile_id', $resellerProfileId);
+
+            return;
+        }
+
+        if ($user->hasRole('customer')) {
+            $query->where('user_id', $user->getKey());
+
+            return;
+        }
+
+        $query->whereRaw('1 = 0');
     }
 }

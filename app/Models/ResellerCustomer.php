@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,5 +31,22 @@ class ResellerCustomer extends Model
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function scopeVisibleTo(Builder $query, User $user): void
+    {
+        if ($user->hasAnyRole(['super_admin', 'admin', 'support'])) {
+            return;
+        }
+
+        $resellerProfileId = $user->resellerProfile?->getKey();
+
+        if ($user->hasRole('reseller') && $resellerProfileId !== null) {
+            $query->where('reseller_profile_id', $resellerProfileId);
+
+            return;
+        }
+
+        $query->whereRaw('1 = 0');
     }
 }
