@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 use App\Domain\Identity\Actions\SyncUserRoles;
+use App\Filament\Widgets\PendingPaymentsWidget;
+use App\Filament\Widgets\RecentOrdersWidget;
+use App\Filament\Widgets\RevenueOverviewWidget;
 use App\Models\Currency;
 use App\Models\CustomerProfile;
 use App\Models\Device;
@@ -101,6 +104,59 @@ class FilamentPanelTest extends TestCase
         $supportRole->revokePermissionTo('View:Dashboard');
 
         $this->actingAs($support)->get('/admin')->assertForbidden();
+    }
+
+    public function test_resource_routes_and_widgets_follow_role_permissions(): void
+    {
+        $support = User::factory()->create();
+        $support->assignRole(Role::findOrCreate('support', 'web'));
+
+        $this->actingAs($support)->get('/admin/orders')->assertOk();
+        $this->actingAs($support)->get('/admin/subscriptions')->assertOk();
+        $this->actingAs($support)->get('/admin/devices')->assertOk();
+        $this->actingAs($support)->get('/admin/plans')->assertForbidden();
+        $this->actingAs($support)->get('/admin/payments')->assertForbidden();
+        $this->actingAs($support)->get('/admin/users')->assertForbidden();
+        $this->actingAs($support)->get('/admin')->assertOk();
+
+        $this->assertTrue(RecentOrdersWidget::canView());
+        $this->assertFalse(RevenueOverviewWidget::canView());
+
+        $admin = User::factory()->create();
+        $admin->assignRole(Role::findOrCreate('admin', 'web'));
+
+        foreach ([
+            '/admin/currencies',
+            '/admin/plans',
+            '/admin/plan-prices',
+            '/admin/orders',
+            '/admin/payments',
+            '/admin/invoices',
+            '/admin/subscriptions',
+            '/admin/reseller-profiles',
+            '/admin/reseller-packages',
+            '/admin/wallet-transactions',
+            '/admin/devices',
+            '/admin/streaming-sessions',
+            '/admin/email-templates',
+            '/admin/themes',
+            '/admin/users',
+        ] as $resourcePath) {
+            $this->actingAs($admin)->get($resourcePath)->assertOk();
+        }
+
+        $this->actingAs($admin)->get('/admin')->assertOk();
+
+        $this->assertTrue(RevenueOverviewWidget::canView());
+
+        $superAdmin = User::factory()->create();
+        $superAdmin->assignRole(Role::findOrCreate('super_admin', 'web'));
+
+        $this->actingAs($superAdmin)->get('/admin/payments')->assertOk();
+        $this->actingAs($superAdmin)->get('/admin/wallet-transactions')->assertOk();
+        $this->actingAs($superAdmin)->get('/admin')->assertOk();
+
+        $this->assertTrue(PendingPaymentsWidget::canView());
     }
 
     public function test_direct_order_urls_and_reseller_lists_are_scoped_to_the_owner(): void

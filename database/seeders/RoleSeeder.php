@@ -24,6 +24,11 @@ class RoleSeeder extends Seeder
             'ViewAny:Role', 'View:Role', 'Create:Role', 'Update:Role', 'Delete:Role', 'ForceDelete:Role',
             'ViewAny:User', 'View:User', 'Create:User', 'Update:User', 'Delete:User', 'Manage:UserRoles',
             'ViewAny:CustomerProfile', 'View:CustomerProfile', 'Create:CustomerProfile', 'Update:CustomerProfile',
+            'ViewAny:Currency', 'View:Currency', 'Create:Currency', 'Update:Currency',
+            'ViewAny:Plan', 'View:Plan', 'Create:Plan', 'Update:Plan',
+            'ViewAny:PlanPrice', 'View:PlanPrice', 'Create:PlanPrice',
+            'ViewAny:EmailTemplate', 'View:EmailTemplate', 'Create:EmailTemplate', 'Update:EmailTemplate',
+            'ViewAny:Theme', 'View:Theme', 'Create:Theme', 'Update:Theme',
             'ViewAny:Order', 'View:Order', 'Create:Order', 'Update:Order',
             'ViewAny:Payment', 'View:Payment', 'Create:Payment',
             'ViewAny:PaymentRefund', 'View:PaymentRefund', 'Create:PaymentRefund',
@@ -39,6 +44,8 @@ class RoleSeeder extends Seeder
             'ViewAny:ResellerWallet', 'View:ResellerWallet',
             'ViewAny:WalletTransaction', 'View:WalletTransaction',
             'View:Dashboard', 'View:AccountWidget', 'View:FilamentInfoWidget',
+            'View:RevenueOverviewWidget', 'View:RecentOrdersWidget', 'View:SubscriptionHealthWidget',
+            'View:PendingPaymentsWidget', 'View:ResellerActivityWidget',
         ];
 
         $permissionModels = collect($allPermissions)
@@ -55,6 +62,7 @@ class RoleSeeder extends Seeder
                 'ViewAny:DeviceAssignment', 'View:DeviceAssignment',
                 'ViewAny:StreamingSession', 'View:StreamingSession',
                 'ViewAny:CustomerProfile', 'View:CustomerProfile',
+                'View:RecentOrdersWidget', 'View:SubscriptionHealthWidget',
                 'ViewAny:ResellerCustomer', 'View:ResellerCustomer',
                 'View:Dashboard', 'View:AccountWidget', 'View:FilamentInfoWidget',
             ],
