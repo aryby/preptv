@@ -25,6 +25,7 @@ class CreateOrderFromPlanPrice
         array $guestSnapshot,
         ?User $user = null,
         int $quantity = 1,
+        ?string $guestAccessToken = null,
     ): Order {
         if ($quantity < 1) {
             throw ValidationException::withMessages([
@@ -39,7 +40,7 @@ class CreateOrderFromPlanPrice
             ])->validate()
             : ['name' => $user->name, 'email' => $user->email];
 
-        return DB::transaction(function () use ($planPriceId, $currencyCode, $customerSnapshot, $user, $quantity): Order {
+        return DB::transaction(function () use ($planPriceId, $currencyCode, $customerSnapshot, $user, $quantity, $guestAccessToken): Order {
             $price = PlanPrice::query()
                 ->with(['plan', 'currency'])
                 ->lockForUpdate()
@@ -82,8 +83,9 @@ class CreateOrderFromPlanPrice
             }
 
             $subtotalMinor = $price->amount_minor * $quantity;
+            $createdAt = now();
 
-            return Model::unguarded(function () use ($price, $customerSnapshot, $user, $quantity, $subtotalMinor): Order {
+            return Model::unguarded(function () use ($price, $customerSnapshot, $user, $quantity, $subtotalMinor, $guestAccessToken, $createdAt): Order {
                 $order = Order::query()->create([
                     'public_id' => (string) Str::ulid(),
                     'user_id' => $user?->getKey(),
@@ -93,6 +95,13 @@ class CreateOrderFromPlanPrice
                     'tax_minor' => 0,
                     'total_minor' => $subtotalMinor,
                     'customer_snapshot' => $customerSnapshot,
+                    'guest_access_token_hash' => $guestAccessToken === null
+                        ? null
+                        : hash('sha256', $guestAccessToken),
+                    'guest_access_expires_at' => $guestAccessToken === null
+                        ? null
+                        : $createdAt->copy()->addDays(7),
+                    'expires_at' => $createdAt->copy()->addHours(24),
                 ]);
 
                 OrderItem::query()->create([
